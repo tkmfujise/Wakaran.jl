@@ -1,6 +1,6 @@
 # Wakaran.jl
 
-｡ﾟ(ﾟ´Д｀ﾟ)ﾟ｡ ＜  Julia わかんないよー
+｡ﾟ(ﾟ´Д｀ﾟ)ﾟ｡ ＜  Julia, I don't get it!
 
 
 ## Usage
@@ -9,4 +9,4 @@ TODO
 
 ## Conclusion
 
-(＊´▽｀＊) ＜ わかったー
+(＊´▽｀＊) ＜ Now I understand.
