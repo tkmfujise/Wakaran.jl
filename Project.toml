@@ -1,0 +1,16 @@
+name = "Wakaran"
+uuid = "5b749d0f-6905-42a8-962c-e5c64ecf324d"
+version = "1.0.0-DEV"
+authors = ["tkmfujise"]
+
+[deps]
+InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
+
+[compat]
+julia = "1.6.7"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
