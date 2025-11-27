@@ -1,6 +1,6 @@
 name = "Wakaran"
 uuid = "5b749d0f-6905-42a8-962c-e5c64ecf324d"
-version = "1.0.0-DEV"
+version = "0.1.0"
 authors = ["tkmfujise"]
 
 [deps]
