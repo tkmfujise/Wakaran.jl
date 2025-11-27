@@ -7,14 +7,25 @@ using InteractiveUtils
 export @ls, @dir
 
 
+struct FieldName
+    self::Symbol
+    type::DataType
+
+    FieldName(name::Tuple{Symbol, DataType}) = begin
+        new(name[begin], name[end])
+    end
+end
+
+
 struct List
-    propertynames::NTuple
+    supertypes::Vector{Type}
+    propertynames::Vector{FieldName}
     methodswith::Vector{Method}
 end
 
 
 struct ModuleList
-    names::Vector{Symbol}
+    names::Vector{FieldName}
 end
 
 
@@ -27,10 +38,13 @@ end
 function build_method_args(argstr::SubString{String})
     isempty(argstr) && return MethodArgComponent[]
     args = MethodArgComponent[]
-    for a in split(String(argstr), ",")
-        parts = split(strip(a), "::")
-        length(parts) == 1 && push!(parts, SubString(""))
-        push!(args, MethodArgComponent(parts[1], parts[2]))
+    for a in split(String(argstr), ",") .|> strip
+        if contains(a, "::")
+            parts = split(a, "::")
+            push!(args, MethodArgComponent(parts[1], parts[2]))
+        else
+            push!(args, MethodArgComponent(a, SubString("")))
+        end
     end
     args
 end
@@ -64,16 +78,24 @@ end
 
 
 function Base.show(io::IO, list::List)
+    println(io, colorize("Supertypes:", bold=true, underline=true, fg=:green))
+    if length(list.supertypes) > 0
+        println(io, " " * colorize(join(list.supertypes, " <: ")))
+    else
+        println(io, " (nothing)")
+    end
+
+    println(io, "")
     println(io, colorize("Propertynames:", bold=true, underline=true, fg=:blue))
     if length(list.propertynames) > 0
-        for prop in list.propertynames
-            println(io, " * " * colorize("$prop", fg=:blue))
+        for name in list.propertynames
+            println(io, " * " * colorize("$(name.self)", fg=:blue) * " :: " * "$(name.type)")
         end
     else
         println(io, " (nothing)")
     end
 
-    println(io, "\n")
+    println(io, "")
     println(io, colorize("Methodswith:", bold=true, underline=true, fg=:red))
     if length(list.methodswith) > 0
         for method in list.methodswith
@@ -89,7 +111,7 @@ function Base.show(io::IO, module_list::ModuleList)
     println(io, colorize("Names:", bold=true, underline=true, fg=:green))
     if length(module_list.names) > 0
         for name in module_list.names
-            println(io, " - " * colorize("$name", fg=:green))
+            println(io, " - " * colorize("$(name.self)", fg=:green) * " :: " * "$(name.type)")
         end
     else
         println(io, " (nothing)")
@@ -195,14 +217,24 @@ function show_as_less(x)
 end
 
 
+function tuplefield(target, name)
+    try
+        tuple(name, typeof(getfield(target, name)))
+    catch e
+        tuple(name, Any)
+    end
+end
+
+
 macro dir(target)
     quote 
         local target = $(esc(target))
         if target isa Module
-            ModuleList(names(target))
+            ModuleList(FieldName.(names(target) .|> n -> tuplefield(target, n)))
         else
             List(
-                propertynames(target),
+                collect(target |> typeof |> supertypes),
+                FieldName.(collect(propertynames(target) .|> x -> tuplefield(target, x))),
                 methodswith(target |> typeof; supertypes=true),
             )
         end
@@ -225,7 +257,7 @@ end
 
 macro ls()
     quote
-        varinfo()
+        varinfo(imported=true)
     end
 end
 
@@ -236,12 +268,12 @@ macro dir(target, name)
         local list = @dir($(esc(target)))
         local name = $(string(name))
         if list isa ModuleList
-            filterednames = filter(x -> occursin(name, string(x)), list.names)
+            filterednames = filter(x -> occursin(name, string(x.self)), list.names)
             ModuleList(filterednames)
         else
-            filteredprops   = filter(p -> occursin(name, string(p)), list.propertynames)
+            filteredprops   = filter(p -> occursin(name, string(p.self)), list.propertynames)
             filteredmethods = filter(m -> occursin(name, string(m.name)), list.methodswith)
-            List(filteredprops, filteredmethods)
+            List(list.supertypes, filteredprops, filteredmethods)
         end
     end
 end
