@@ -5,7 +5,7 @@
 
 ## Demo Video
 
-[![Demo](http://img.youtube.com/vi/MmNb0rWyzBQ/0.jpg)](https://www.youtube.com/watch?v=MmNb0rWyzBQ)
+[![Demo](http://img.youtube.com/vi/jujx8mkVGXY/0.jpg)](https://www.youtube.com/watch?v=jujx8mkVGXY)
 
 
 ## Usage
