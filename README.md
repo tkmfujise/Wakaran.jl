@@ -14,7 +14,7 @@
 julia> using Wakaran
 ```
 
-### @dir
+### @dir target
 ```julia
 julia> @dir Wakaran
 Names:
@@ -56,7 +56,7 @@ Methodswith:
  ⋮
 ```
 
-### @dir keyword
+### @dir target keyword
 ```julia
 # Grep info of a Module
 julia> @dir Images BGR
@@ -81,7 +81,21 @@ Methodswith:
 ```
 
 ### @ls
-`@ls` shows the result of `@dir` with less command.
+`@ls` shows the result of `varinfo(imported=true)`.
+```julia
+julia> @ls
+  name          size summary  
+  ––––––– –––––––––– –––––––––
+  Base               Module   
+  Core               Module   
+  Images  74.967 KiB Module   
+  Main               Module   
+  Wakaran  6.568 KiB Module   
+  img        3 bytes RGB{N0f8}
+```
+
+### @ls target
+`@ls target` shows the result of `@dir target` with less command.
 ```julia
 julia> @ls Images
 
